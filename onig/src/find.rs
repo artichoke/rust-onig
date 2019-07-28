@@ -1,5 +1,5 @@
-use std::iter::Iterator;
 use super::{Regex, Region, SearchOptions};
+use std::iter::Iterator;
 
 impl Regex {
     /// Returns the capture groups corresponding to the leftmost-first match
@@ -13,7 +13,8 @@ impl Regex {
             text.len(),
             SearchOptions::SEARCH_OPTION_NONE,
             Some(&mut region),
-        ).map(|pos| Captures {
+        )
+        .map(|pos| Captures {
             text,
             region,
             offset: pos,
@@ -583,7 +584,8 @@ mod tests {
         let reg = Regex::new(r"\d+\.(\d+)").unwrap();
         let captures = reg.captures("100 - 3.1415 / 2.0").unwrap();
         assert_eq!(6, captures.offset());
-        let all_caps = reg.captures_iter("1 - 3234.3 * 123.2 - 100")
+        let all_caps = reg
+            .captures_iter("1 - 3234.3 * 123.2 - 100")
             .map(|cap| cap.offset())
             .collect::<Vec<_>>();
         assert_eq!(vec![4, 13], all_caps);

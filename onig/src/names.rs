@@ -1,9 +1,9 @@
-use std::marker::PhantomData;
 use std::iter::Iterator;
-use std::ptr::null;
-use std::str::from_utf8_unchecked;
-use std::slice::from_raw_parts;
+use std::marker::PhantomData;
 use std::os::raw::{c_int, c_uchar, c_uint, c_void};
+use std::ptr::null;
+use std::slice::from_raw_parts;
+use std::str::from_utf8_unchecked;
 
 use onig_sys::{self, OnigRegex, OnigUChar};
 
@@ -166,7 +166,8 @@ mod tests {
         assert_eq!(regex.capture_histories_len(), 0);
     }
 
-    #[test] #[cfg_attr(all(windows, target_arch="x86"), ignore)]
+    #[test]
+    #[cfg_attr(all(windows, target_arch = "x86"), ignore)]
     fn test_regex_names() {
         // FIXME: for windows i686 targets, `let names = ...` causes segfault when testing (see github:rust-onig/rust-onig/issue#100)
         let regex = Regex::new("(he)(l+)(o)").unwrap();

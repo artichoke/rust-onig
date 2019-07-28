@@ -1,10 +1,10 @@
-extern crate pkg_config;
 extern crate cc;
+extern crate pkg_config;
 
 use pkg_config::Config;
 use std::env;
-use std::fs;
 use std::fmt;
+use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -73,8 +73,11 @@ fn compile() {
     }
 
     if !src.exists() {
-        panic!("Unable to find source files in {}. Is oniguruma submodule checked out?\n\
-                Try git submodule init; git submodule update", src.display());
+        panic!(
+            "Unable to find source files in {}. Is oniguruma submodule checked out?\n\
+             Try git submodule init; git submodule update",
+            src.display()
+        );
     }
 
     let os = env::var("CARGO_CFG_TARGET_OS").unwrap();
@@ -92,7 +95,10 @@ fn compile() {
 
         // Can't use size_of::<c_long>(), because it'd refer to build arch, not target arch.
         // so instead assume it's a non-exotic target (LP32/LP64).
-        fs::write(config_h, format!("
+        fs::write(
+            config_h,
+            format!(
+                "
             #define HAVE_PROTOTYPES 1
             #define STDC_HEADERS 1
             #define HAVE_STRING_H 1
@@ -103,27 +109,66 @@ fn compile() {
             #define SIZEOF_INT 4
             #define SIZEOF_SHORT 2
             #define SIZEOF_LONG {}
-        ", if bits == "64" {"8"} else {"4"}
-        )).expect("Can't write config.h to OUT_DIR");
+        ",
+                if bits == "64" { "8" } else { "4" }
+            ),
+        )
+        .expect("Can't write config.h to OUT_DIR");
     }
 
     cc.include(out_dir); // Read config.h from there
     cc.include(src);
 
     let files = [
-        "regexec.c", "regerror.c", "regparse.c", "regext.c", "regcomp.c",
-        "reggnu.c", "regenc.c", "regsyntax.c", "regtrav.c", "regversion.c",
-        "st.c", "regposerr.c", "onig_init.c",
-        "unicode.c", "ascii.c", "utf8.c", "utf16_be.c", "utf16_le.c",
-        "utf32_be.c", "utf32_le.c", "euc_jp.c", "sjis.c", "iso8859_1.c",
-        "iso8859_2.c", "iso8859_3.c", "iso8859_4.c", "iso8859_5.c",
-        "iso8859_6.c", "iso8859_7.c", "iso8859_8.c", "iso8859_9.c",
-        "iso8859_10.c", "iso8859_11.c", "iso8859_13.c", "iso8859_14.c",
-        "iso8859_15.c", "iso8859_16.c",
-        "euc_tw.c", "euc_kr.c", "big5.c", "gb18030.c", "koi8_r.c",
-        "cp1251.c", "euc_jp_prop.c", "sjis_prop.c",
-        "unicode_unfold_key.c", "unicode_fold1_key.c",
-        "unicode_fold2_key.c", "unicode_fold3_key.c",
+        "regexec.c",
+        "regerror.c",
+        "regparse.c",
+        "regext.c",
+        "regcomp.c",
+        "reggnu.c",
+        "regenc.c",
+        "regsyntax.c",
+        "regtrav.c",
+        "regversion.c",
+        "st.c",
+        "regposerr.c",
+        "onig_init.c",
+        "unicode.c",
+        "ascii.c",
+        "utf8.c",
+        "utf16_be.c",
+        "utf16_le.c",
+        "utf32_be.c",
+        "utf32_le.c",
+        "euc_jp.c",
+        "sjis.c",
+        "iso8859_1.c",
+        "iso8859_2.c",
+        "iso8859_3.c",
+        "iso8859_4.c",
+        "iso8859_5.c",
+        "iso8859_6.c",
+        "iso8859_7.c",
+        "iso8859_8.c",
+        "iso8859_9.c",
+        "iso8859_10.c",
+        "iso8859_11.c",
+        "iso8859_13.c",
+        "iso8859_14.c",
+        "iso8859_15.c",
+        "iso8859_16.c",
+        "euc_tw.c",
+        "euc_kr.c",
+        "big5.c",
+        "gb18030.c",
+        "koi8_r.c",
+        "cp1251.c",
+        "euc_jp_prop.c",
+        "sjis_prop.c",
+        "unicode_unfold_key.c",
+        "unicode_fold1_key.c",
+        "unicode_fold2_key.c",
+        "unicode_fold3_key.c",
     ];
     for file in files.iter() {
         cc.file(src.join(file));
@@ -151,8 +196,8 @@ pub fn main() {
             Ok(_) => return,
             Err(ref err) if require_pkg_config => {
                 panic!("Unable to find oniguruma in pkg-config, and RUSTONIG_SYSTEM_LIBONIG is set: {}", err);
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 

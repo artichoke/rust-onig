@@ -76,10 +76,7 @@ impl<'a> EncodedBytes<'a> {
     ///
     /// A new buffer instance
     pub fn from_parts(bytes: &'a [u8], enc: onig_sys::OnigEncoding) -> EncodedBytes<'a> {
-        EncodedBytes {
-            bytes,
-            enc,
-        }
+        EncodedBytes { bytes, enc }
     }
 
     /// New ASCII Buffer

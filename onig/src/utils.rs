@@ -1,6 +1,6 @@
-use std::mem;
-use std::ffi::{CStr, CString};
 use onig_sys;
+use std::ffi::{CStr, CString};
+use std::mem;
 
 /// Get Version
 ///

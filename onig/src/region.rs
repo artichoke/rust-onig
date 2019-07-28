@@ -1,12 +1,12 @@
 #![allow(clippy::transmute_ptr_to_ref)]
 
-use std::ptr::null;
+use onig_sys;
 use std::mem::transmute;
 use std::os::raw::c_int;
-use onig_sys;
+use std::ptr::null;
 
-use super::CaptureTreeNode;
 use super::flags::TraverseCallbackAt;
+use super::CaptureTreeNode;
 
 /// Represents a set of capture groups found in a search or match.
 #[derive(Debug, Eq, PartialEq)]
@@ -111,12 +111,7 @@ impl Region {
             return None;
         }
         let pos = pos as isize;
-        let (beg, end) = unsafe {
-            (
-                *self.raw.beg.offset(pos),
-                *self.raw.end.offset(pos),
-            )
-        };
+        let (beg, end) = unsafe { (*self.raw.beg.offset(pos), *self.raw.end.offset(pos)) };
         if beg != onig_sys::ONIG_REGION_NOTPOS {
             Some((beg as usize, end as usize))
         } else {
@@ -255,8 +250,8 @@ impl<'a> Iterator for RegionIter<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::{Regex, SearchOptions};
+    use super::*;
 
     #[test]
     fn test_region_create() {
