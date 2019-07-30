@@ -86,11 +86,14 @@ fn compile() {
         fs::copy(src.join(format!("config.h.win{}", bits)), config_h)
             .expect("Can't copy config.h.win??");
     } else {
-        let family = env::var("CARGO_CFG_TARGET_FAMILY").unwrap();
-        if family == "unix" {
-            cc.define("HAVE_UNISTD_H", Some("1"));
-            cc.define("HAVE_SYS_TYPES_H", Some("1"));
-            cc.define("HAVE_SYS_TIME_H", Some("1"));
+        let family = env::var("CARGO_CFG_TARGET_FAMILY");
+        match family {
+            Ok(ref family) if family == "unix" => {
+                cc.define("HAVE_UNISTD_H", Some("1"));
+                cc.define("HAVE_SYS_TYPES_H", Some("1"));
+                cc.define("HAVE_SYS_TIME_H", Some("1"));
+            }
+            _ => {}
         }
 
         // Can't use size_of::<c_long>(), because it'd refer to build arch, not target arch.
