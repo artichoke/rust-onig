@@ -562,7 +562,7 @@ extern "C" {
     /// # Arguments
     ///
     /// 1 mp: match-param pointer
-    pub fn onig_initialize_match_param(mp: *mut OnigMatchParam);
+    pub fn onig_initialize_match_param(mp: *mut OnigMatchParam) -> c_int;
 
     /// Set a maximum number of match-stack depth.
     /// 0 means unlimited.
