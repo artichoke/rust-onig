@@ -130,6 +130,10 @@ fn compile() {
             .join("libc");
         cc.include(wasm_headers);
         cc.define("ONIG_DISABLE_DIRECT_THREADING", Some("1"));
+        cc.define(
+            "ONIG_EXTERN",
+            Some(r#"__attribute__((visibility("default")))"#),
+        );
     }
 
     cc.include(out_dir); // Read config.h from there
@@ -199,11 +203,20 @@ fn compile() {
 }
 
 fn bindgen_headers(path: &str) {
-    let bindings = bindgen::Builder::default()
-        .header(path)
-        .derive_eq(true)
-        .generate()
-        .expect("bindgen");
+    let arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
+    let mut bindgen = bindgen::Builder::default().header(path).derive_eq(true);
+    if arch == "wasm32" || arch == "wasm64" {
+        let wasm_headers = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+            .join("vendor")
+            .join("emscripten")
+            .join("system")
+            .join("include")
+            .join("libc");
+        bindgen = bindgen
+            .clang_arg(format!("-I{}", wasm_headers.to_str().unwrap()))
+            .clang_arg(r#"-DONIG_EXTERN=__attribute__((visibility("default")))"#);
+    }
+    let bindings = bindgen.generate().expect("bindgen");
     let out_dir = env::var_os("OUT_DIR").expect("OUT_DIR");
     let out_path = Path::new(&out_dir);
     bindings
