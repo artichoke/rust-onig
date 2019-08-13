@@ -84,13 +84,16 @@ fn compile() {
     }
 
     let os = env::var("CARGO_CFG_TARGET_OS").unwrap();
+    let arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
     let bits = env::var("CARGO_CFG_TARGET_POINTER_WIDTH").unwrap();
     if os == "windows" {
         fs::copy(src.join(format!("config.h.win{}", bits)), config_h)
             .expect("Can't copy config.h.win??");
     } else {
-        let family = env::var("CARGO_CFG_TARGET_FAMILY").unwrap();
-        if family == "unix" {
+        if let Ok("unix") = env::var("CARGO_CFG_TARGET_FAMILY")
+            .as_ref()
+            .map(String::as_str)
+        {
             cc.define("HAVE_UNISTD_H", Some("1"));
             cc.define("HAVE_SYS_TYPES_H", Some("1"));
             cc.define("HAVE_SYS_TIME_H", Some("1"));
@@ -117,6 +120,16 @@ fn compile() {
             ),
         )
         .expect("Can't write config.h to OUT_DIR");
+    }
+    if arch == "wasm32" || arch == "wasm64" {
+        let wasm_headers = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+            .join("vendor")
+            .join("emscripten")
+            .join("system")
+            .join("include")
+            .join("libc");
+        cc.include(wasm_headers);
+        cc.define("ONIG_DISABLE_DIRECT_THREADING", Some("1"));
     }
 
     cc.include(out_dir); // Read config.h from there
@@ -217,8 +230,8 @@ pub fn main() {
                         break;
                     }
                 }
-                return
-            },
+                return;
+            }
             Err(ref err) if require_pkg_config => {
                 panic!("Unable to find oniguruma in pkg-config, and RUSTONIG_SYSTEM_LIBONIG is set: {}", err);
             }
