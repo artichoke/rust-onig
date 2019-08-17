@@ -24,9 +24,12 @@ readme = "../README.md"
 license = "MIT"
 
 [build-dependencies]
-bindgen = "0.50"
 pkg-config = "0.3"
 cc = "1.0"
+
+[build-dependencies.bindgen]
+version = "0.50.0"
+default-features = false
 
 [features]
 # Make Oniguruma print debug output for parsing/compiling and executing
