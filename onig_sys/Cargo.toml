@@ -28,7 +28,7 @@ pkg-config = "0.3"
 cc = "1.0"
 
 [build-dependencies.bindgen]
-version = "0.50.0"
+version = "0.51.0"
 default-features = false
 
 [features]
